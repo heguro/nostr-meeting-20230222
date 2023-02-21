@@ -23,7 +23,7 @@ marp: true
 
 ## 今回の資料・ソースコード
 
-<https://github.com/heguro/nostr-connpass-20230222>
+<https://github.com/heguro/nostr-meeting-20230222>
 
 PCでご覧のかたは、是非一緒にDevToolsを開いて動かしてみてください！
 
@@ -32,7 +32,7 @@ PCでご覧のかたは、是非一緒にDevToolsを開いて動かしてみて�
 作業することをオススメします！
 
 ---
-<!-- footer: ソースコードは `https://github.com/heguro/nostr-connpass-20230222` から -->
+<!-- footer: ソースコードは `https://github.com/heguro/nostr-meeting-20230222` から -->
 
 ## Nostr プロトコルでの開発がいかに簡単か
 
