@@ -226,14 +226,19 @@ ws.addEventListener("message", (event) => { // メッセージが来たら
 - JavaScriptなら`nostr-tools`
   - <https://github.com/nbd-wtf/nostr-tools>
   - 取得時自動で署名検証してくれる（手動でもできる）
+- DevToolsで読み込む例
+
+```javascript
+script = document.createElement("script");
+script.src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js";
+document.body.append(script);
+```
 
 ---
 
 `nostr-tools`ライブラリを使って同等の記述（修正済）
 
 ```javascript
-document.write('<script src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js"></script>');
-
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
 
 relay = NostrTools.relayInit("wss://nostrja-kari.heguro.com");
@@ -257,8 +262,6 @@ for (const event of events) {  // 取得したイベントを表示
 投稿してみる（修正済）
 
 ```javascript
-document.write('<script src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js"></script>');
-
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
 privkey = NostrTools.nip19.decode("nsec~~~").data;  // 秘密鍵(hex形式)
 
@@ -325,13 +328,11 @@ pubkey = NostrTools.nip19.decode(
 
 ---
 
-補足2: NIP-07拡張機能（nos2xなど）を使って署名して投稿する
+補足2: NIP-07拡張機能（nos2xなど）を使って署名して投稿する\
+（about:blankでは拡張機能が動かないので、example.comなどで実行）
 
 ```javascript
-document.write('<script src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js"></script>');
-
-pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
-privkey = NostrTools.nip19.decode("nsec~~~").data;  // 秘密鍵(hex形式)
+pubkey = await window.nostr.getPublicKey(); // 拡張機能から公開鍵を取得
 
 relay = NostrTools.relayInit("wss://nostrja-kari.heguro.com");
 await relay.connect();  // 接続  (本来はtry-catchで囲むべき)
@@ -345,7 +346,7 @@ event = {
 }
 
 event.id = NostrTools.getEventHash(event); // IDを生成
-event = await window.nostr.signEvent(event); // sigを生成
+event = await window.nostr.signEvent(event); // 拡張機能で署名して、sigを含めたイベントをもらう
 
 pub = relay.publish(event);
 pub.on('ok', () => {
