@@ -262,12 +262,15 @@ for (const event of events) {  // 取得したイベントを表示
 投稿してみる
 
 ```typescript
-NostrTools = await import("https://esm.sh/nostr-tools@1.4.1");
+NostrTools = await import("https://esm.sh/nostr-tools@1.4.1"); // 時間かかる
+
+pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
 
 relay = NostrTools.relayInit("wss://nostrja-kari.heguro.com");
 await relay.connect();  // 接続  (本来はtry-catchで囲むべき)
 
 event = {
+  "pubkey": pubkey,
   "created_at": Math.floor(Date.now() / 1000),  // 現在時刻(秒)
   "kind": 1,                 // 投稿はkind(種類):1
   "tags": [],                // リプライ先があれば指定
