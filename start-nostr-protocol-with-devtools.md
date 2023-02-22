@@ -232,7 +232,7 @@ ws.addEventListener("message", (event) => { // メッセージが来たら
 
 ---
 
-`nostr-tools`ライブラリを使って同等の記述
+`nostr-tools`ライブラリを使って同等の記述　（注：動きません。要修正）
 
 ```typescript
 // お試し用
@@ -259,7 +259,7 @@ for (const event of events) {  // 取得したイベントを表示
 
 ---
 
-投稿してみる
+投稿してみる　（注：動きません。要修正）
 
 ```typescript
 NostrTools = await import("https://esm.sh/nostr-tools@1.4.1"); // 時間かかる
