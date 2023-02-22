@@ -11,14 +11,6 @@ marp: true
 - `npub1jw4e8qh6vmyq0n2tkupv7wlfu5h59luk98dcfedf03anh5ek5jkq936u57`
 - <https://iris.to/heguro@heguro.com>
 
-**※WIP** 現在編集中で、全面的に差し替える可能性もあります
-
-<!--
-あすらも または heguro と申します。
-
-今回は「DevToolsではじめる簡単Nostrプロトコル」ということで、ブラウザの開発ツールを使ってNostrプロトコルに触れていきたいと思います。
--->
-
 ---
 
 ## 今回の資料・ソースコード
@@ -82,7 +74,7 @@ PCでご覧のかたは、是非一緒にDevToolsを開いて動かしてみて�
 
 WebSocketのみで書いてみる
 
-```typescript
+```javascript
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac"; // @heguroの公開鍵(hex)
 subscriptionId = Math.random().toString().slice(2); // 購読IDはランダム
 
@@ -132,7 +124,7 @@ Nostrでは投稿、リアクション、またプロフィール変更などが
 
 ```json
 {
-  "id": "<64文字のhex>",      // 作成時刻・投稿内容から生成される
+  "id": "<64文字のhex>",     // 作成時刻・投稿内容から生成される
   "pubkey": "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac",
   "created_at": 1676227868,  // イベント作成時刻（＝投稿時刻）
   "kind": 1,                 // 投稿はkind(種類):1
@@ -154,7 +146,7 @@ Nostrでは投稿、リアクション、またプロフィール変更などが
 
 再掲
 
-```typescript
+```javascript
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac"; // @heguroの公開鍵(hex)
 subscriptionId = Math.random().toString().slice(2); // 購読IDはランダム
 
@@ -187,7 +179,7 @@ ws.addEventListener("message", (event) => { // メッセージが来たら
 
 正解は・・・
 
-```typescript
+```javascript
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac"; // @heguroの公開鍵(hex)
 subscriptionId = Math.random().toString().slice(2); // 購読IDはランダム
 
@@ -228,43 +220,43 @@ ws.addEventListener("message", (event) => { // メッセージが来たら
   - 投稿されてからリレーを経由して受信するまでにイベントを改ざんされていないか
 - ライブラリーを使うのが手軽
 - JavaScriptなら`nostr-tools`
+  - <https://github.com/nbd-wtf/nostr-tools>
   - 取得時自動で署名検証してくれる（手動でもできる）
 
 ---
 
-`nostr-tools`ライブラリを使って同等の記述　（注：動きません。要修正）
+`nostr-tools`ライブラリを使って同等の記述（修正済）
 
-```typescript
-// お試し用
-NostrTools = await import("https://esm.sh/nostr-tools@1.4.1");
+```javascript
+document.write('<script src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js"></script>');
 
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
 
 relay = NostrTools.relayInit("wss://nostrja-kari.heguro.com");
 await relay.connect();  // 接続  (本来はtry-catchで囲むべき)
 
-events = await relay.list({ // 取得条件を指定して取得開始
+events = await relay.list([{ // 取得条件を指定して取得開始
   authors: [pubkey], // イベント発行者
   kinds: [1],        // kind1は投稿(ノート)
   limit: 10,         // 過去10個分を取る
-});
-
+}]);
 for (const event of events) {  // 取得したイベントを表示
   console.log(
     new Date(event.created_at * 1000), // created_at: 投稿日時 Unix time (秒)
     event.content                      // content: 本文
-  )
-}
+  );
+};
 ```
 
 ---
 
-投稿してみる　（注：動きません。要修正）
+投稿してみる（修正済）
 
-```typescript
-NostrTools = await import("https://esm.sh/nostr-tools@1.4.1"); // 時間かかる
+```javascript
+document.write('<script src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js"></script>');
 
 pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
+privkey = NostrTools.nip19.decode("nsec~~~").data;  // 秘密鍵(hex形式)
 
 relay = NostrTools.relayInit("wss://nostrja-kari.heguro.com");
 await relay.connect();  // 接続  (本来はtry-catchで囲むべき)
@@ -278,7 +270,7 @@ event = {
 }
 
 event.id = NostrTools.getEventHash(event); // IDを生成
-event.sig = NostrTools.signEvent(event, "秘密鍵(hex)"); // sigを生成
+event.sig = NostrTools.signEvent(event, privkey); // sigを生成
 
 pub = relay.publish(event);
 pub.on('ok', () => {
@@ -306,5 +298,56 @@ pub.on('failed', (error) => {
 
 ## 宣伝
 
-NostrFlu
+NostrFlu\
 <https://heguro.github.io/nostr-following-list-util/>
+
+ソースコードの参考にもどうぞ（かなり雑ですが・・・）
+
+---
+
+## 補足
+
+- npub形式の公開鍵があれば、以下のコードでhex形式に変換できます
+
+```javascript
+pubkey = NostrTools.nip19.decode(
+  "npub1jw4e8qh6vmyq0n2tkupv7wlfu5h59luk98dcfedf03anh5ek5jkq936u57").data;
+```
+
+- 実際はNIP-07対応拡張機能（nos2xなど）を使って秘密鍵を直接扱うことなく署名することができ、この方法が**強く推奨**されます
+- `nostr-tools`の仕様が素で書くには非常に分かりづらいので、パッケージの仕様や返り値などを確認しながらコーディングできるVS Codeなどのしっかりしたエディターで開発することをオススメします・・・
+- スライドで使用したリレーの `nostrja-kari.heguro.com` は現在投稿をホワイトリスト制にしています
+  - 別のリレーを使うか、リプいただければリストに入れます
+
+---
+
+補足2: NIP-07拡張機能（nos2xなど）を使って署名して投稿する
+
+```javascript
+document.write('<script src="https://unpkg.com/nostr-tools@1.4.1/lib/nostr.bundle.js"></script>');
+
+pubkey = "93ab9382fa66c807cd4bb702cf3be9e52f42ff9629db84e5a97c7b3bd336a4ac";
+privkey = NostrTools.nip19.decode("nsec~~~").data;  // 秘密鍵(hex形式)
+
+relay = NostrTools.relayInit("wss://nostrja-kari.heguro.com");
+await relay.connect();  // 接続  (本来はtry-catchで囲むべき)
+
+event = {
+  "pubkey": pubkey,
+  "created_at": Math.floor(Date.now() / 1000),  // 現在時刻(秒)
+  "kind": 1,                 // 投稿はkind(種類):1
+  "tags": [],                // リプライ先があれば指定
+  "content": "本文\nだよ〜", // 改行は`\n`
+}
+
+event.id = NostrTools.getEventHash(event); // IDを生成
+event = await window.nostr.signEvent(event); // sigを生成
+
+pub = relay.publish(event);
+pub.on('ok', () => {
+  console.log('投稿完了');
+});
+pub.on('failed', (error) => {
+  console.log('投稿失敗:', error);
+});
+```
