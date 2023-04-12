@@ -11,7 +11,7 @@ marp: true
 - `npub1jw4e8qh6vmyq0n2tkupv7wlfu5h59luk98dcfedf03anh5ek5jkq936u57`
 - <https://iris.to/heguro@heguro.com>
 
-「Nostr勉強会 #0」より
+2023/2/22「Nostr勉強会 #0」より
 
 - <https://428lab.connpass.com/event/275748/>
 
